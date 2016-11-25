@@ -12,4 +12,8 @@ class Filters
         $value = preg_replace('/\\s{2,}/',' ',$value);
         return $value;
 	}
+
+	public static function datePt2Unix($date){
+        return \DateTime::createFromFormat('d/m/Y',$date)->format('Y-m-d');
+    }
 }

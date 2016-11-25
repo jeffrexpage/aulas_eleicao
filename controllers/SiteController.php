@@ -2,8 +2,11 @@
 
 namespace app\controllers;
 
+use app\models\Bairro;
+use app\models\RegisterForm;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
@@ -121,5 +124,27 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionRegister()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new RegisterForm();
+
+        // busca todos os bairros
+        /** @var Bairro[] $bairros */
+        $bairros = Bairro::find()->all();
+        $bairros = ArrayHelper::map($bairros,'id','nome');
+
+        if ($model->load(Yii::$app->request->post()) && $model->register()) {
+            return $this->goHome();
+        }
+        return $this->render('register', [
+            'model' => $model,
+            'bairros' => $bairros
+        ]);
     }
 }
