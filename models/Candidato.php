@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use app\models\validators\Filters;
 
 /**
  * This is the model class for table "candidato".
@@ -31,8 +31,24 @@ class Candidato extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+
+            // campos obrigatórios
             [['nome', 'numero', 'partido'], 'required'],
+
+            // normalizando o nome
+            [
+                ['nome'],
+                'filter',
+                'filter' => function($value) {
+                    return Filters::normalizeString($value);
+                }
+            ],
+
+            [['numero'],'match','pattern' => '/[0-9]{5}/'],
+
+            // perfil é uma string
             [['perfil'], 'string'],
+
             [['nome', 'numero', 'partido'], 'string', 'max' => 255],
         ];
     }
@@ -57,5 +73,22 @@ class Candidato extends \yii\db\ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::className(), ['id_candidato' => 'id']);
+    }
+
+    public function getPerfilView(){
+        $perfil = $this->perfil;
+
+        // negrito
+        $perfil = preg_replace('/\*(.*?)\*/','<b>$1</b>',$perfil);
+
+        // italico
+        $perfil = preg_replace('/\/(.*?)\//','<i>$1</i>',$perfil);
+
+        // sublinhado
+        $perfil = preg_replace('/_(.*?)_/','<u>$1</u>',$perfil);
+
+
+
+        return $perfil;
     }
 }

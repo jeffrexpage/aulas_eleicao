@@ -31,9 +31,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'nome',
             'numero',
-            'partido',
-            'perfil:ntext',
+            'partido'
         ],
     ]) ?>
+
+    <h3>Perfil</h3>
+    <pre><?= $model->perfilView ?></pre>
 
 </div>
