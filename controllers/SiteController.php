@@ -8,8 +8,6 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\User;
-use app\models\Bairro;
 
 class SiteController extends Controller
 {
@@ -62,11 +60,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $user = new User();
-        $user->data_nascimento = '1999-07-01';
-        var_dump($user->save());
-        var_dump($user->errors);
-        //return $this->render('index');
+        return $this->render('index');
     }
 
     /**
