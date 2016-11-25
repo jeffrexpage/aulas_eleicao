@@ -36,8 +36,6 @@ class m161111_231612_CreateTableUser extends Migration
 
     public function down()
     {
-        $this->dropForeignKey('fk_user_candidato','user');
-        $this->dropForeignKey('fk_user_bairro','user');
         $this->dropTable('user');
     }
 
