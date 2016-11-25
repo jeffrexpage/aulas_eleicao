@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\models\validators\Filters;
+use yii\db\ActiveQuery;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "candidato".
@@ -14,6 +16,7 @@ use app\models\validators\Filters;
  * @property string $perfil
  *
  * @property User[] $users
+ * @property Hashtag[] $hashtags
  */
 class Candidato extends \yii\db\ActiveRecord
 {
@@ -39,12 +42,12 @@ class Candidato extends \yii\db\ActiveRecord
             [
                 ['nome'],
                 'filter',
-                'filter' => function($value) {
+                'filter' => function ($value) {
                     return Filters::normalizeString($value);
                 }
             ],
 
-            [['numero'],'match','pattern' => '/[0-9]{5}/'],
+            [['numero'], 'match', 'pattern' => '/[0-9]{5}/'],
 
             // perfil é uma string
             [['perfil'], 'string'],
@@ -75,20 +78,44 @@ class Candidato extends \yii\db\ActiveRecord
         return $this->hasMany(User::className(), ['id_candidato' => 'id']);
     }
 
-    public function getPerfilView(){
+    /**
+     * @return ActiveQuery
+     */
+    public function getHashtags()
+    {
+        return $this
+            ->hasMany(Hashtag::className(), ['id' => 'id_hashtag'])
+            ->viaTable('candidato_hashtag', ['id_candidato', 'id']);
+    }
+
+    public function getPerfilView()
+    {
         $perfil = $this->perfil;
 
         // negrito
-        $perfil = preg_replace('/\*(.*?)\*/','<b>$1</b>',$perfil);
+        $perfil = preg_replace('/\*(.*?)\*/', '<b>$1</b>', $perfil);
 
         // italico
-        $perfil = preg_replace('/\/(.*?)\//','<i>$1</i>',$perfil);
+        $perfil = preg_replace('/\/(.*?)\//', '<i>$1</i>', $perfil);
 
         // sublinhado
-        $perfil = preg_replace('/_(.*?)_/','<u>$1</u>',$perfil);
+        $perfil = preg_replace('/_(.*?)_/', '<u>$1</u>', $perfil);
 
-
+        // hashtag
+        preg_match_all('/\#[A-Za-z0-9_]*/', $perfil, $hashtags);
+        foreach ($hashtags[0] as $hashtag) {
+            $id = $this->linkHashtag($hashtag);
+            $perfil = str_replace($hashtag, Html::a($hashtag, ['hashtag/view', 'id' => $id]), $perfil);
+        }
 
         return $perfil;
+    }
+
+    /**
+     * @return int
+     */
+    public function linkHashtag(string $hashtag):int
+    {
+        return 1;
     }
 }

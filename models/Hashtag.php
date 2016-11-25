@@ -8,7 +8,7 @@ namespace app\models;
  * @property integer $id
  * @property string $nome
  *
- * @property CandidatoHashtag[] $candidatoHashtags
+ * @property Candidato[] $candidatos
  */
 class Hashtag extends \yii\db\ActiveRecord
 {
@@ -27,6 +27,7 @@ class Hashtag extends \yii\db\ActiveRecord
     {
         return [
             [['nome'], 'required'],
+            [['nome'], 'unique'],
             [['nome'], 'string', 'max' => 255],
         ];
     }
@@ -45,8 +46,10 @@ class Hashtag extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCandidatoHashtags()
+    public function getCandidatos()
     {
-        return $this->hasMany(CandidatoHashtag::className(), ['id_hashtag' => 'id']);
+        return $this
+            ->hasMany(Candidato::className(), ['id' => 'id_candidato'])
+            ->viaTable('candidato_hashtag', ['id_hashtag', 'id']);
     }
 }

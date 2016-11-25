@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <h3>Perfil</h3>
+    <pre><?= $model->perfil ?></pre>
     <pre><?= $model->perfilView ?></pre>
 
 </div>
