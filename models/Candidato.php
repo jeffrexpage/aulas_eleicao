@@ -17,6 +17,7 @@ use yii\helpers\Html;
  *
  * @property User[] $users
  * @property Hashtag[] $hashtags
+ * @property string $perfilView
  */
 class Candidato extends \yii\db\ActiveRecord
 {
@@ -93,29 +94,47 @@ class Candidato extends \yii\db\ActiveRecord
         $perfil = $this->perfil;
 
         // negrito
-        $perfil = preg_replace('/\*(.*?)\*/', '<b>$1</b>', $perfil);
+        $perfil = preg_replace('/\*(.+?)\*/', '<b>$1</b>', $perfil);
 
         // italico
-        $perfil = preg_replace('/\/(.*?)\//', '<i>$1</i>', $perfil);
+        $perfil = preg_replace('/%(.+?)%/', '<i>$1</i>', $perfil);
 
         // sublinhado
-        $perfil = preg_replace('/_(.*?)_/', '<u>$1</u>', $perfil);
+        $perfil = preg_replace('/_(.+?)_/', '<u>$1</u>', $perfil);
 
         // hashtag
-        preg_match_all('/\#[A-Za-z0-9_]*/', $perfil, $hashtags);
+        preg_match_all('/\#[A-Za-z0-9_]+/', $perfil, $hashtags);
         foreach ($hashtags[0] as $hashtag) {
             $id = $this->linkHashtag($hashtag);
-            $perfil = str_replace($hashtag, Html::a($hashtag, ['hashtag/view', 'id' => $id]), $perfil);
+            $perfil = str_replace($hashtag, Html::a(
+                $hashtag,
+                [
+                    'hashtag/view',
+                    'id' => $id
+                ]
+            ), $perfil);
         }
 
         return $perfil;
     }
 
     /**
+     * @param string $hashtag
      * @return int
      */
-    public function linkHashtag(string $hashtag):int
+    public function linkHashtag($strHashtag)
     {
-        return 1;
+        $strHashtag = str_replace('#','',$strHashtag);
+
+        $hashtag = Hashtag::find()->where(['nome' => $strHashtag])->one();
+
+        if(is_null($hashtag)){
+            $hashtag = new Hashtag();
+            $hashtag->nome = $strHashtag;
+            $hashtag->save();
+        }
+
+        return $hashtag->id;
+
     }
 }

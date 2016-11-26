@@ -50,6 +50,6 @@ class Hashtag extends \yii\db\ActiveRecord
     {
         return $this
             ->hasMany(Candidato::className(), ['id' => 'id_candidato'])
-            ->viaTable('candidato_hashtag', ['id_hashtag', 'id']);
+            ->viaTable('candidato_hashtag', ['id_hashtag' => 'id']);
     }
 }
