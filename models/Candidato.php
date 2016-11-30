@@ -94,13 +94,13 @@ class Candidato extends \yii\db\ActiveRecord
         $perfil = $this->perfil;
 
         // negrito
-        $perfil = preg_replace('/\*(.+?)\*/', '<b>$1</b>', $perfil);
+        $perfil = preg_replace('/\*([^*]+?)\*/', '<b>$1</b>', $perfil);
 
         // italico
-        $perfil = preg_replace('/%(.+?)%/', '<i>$1</i>', $perfil);
+        $perfil = preg_replace('/%([^%]+?)%/', '<i>$1</i>', $perfil);
 
         // sublinhado
-        $perfil = preg_replace('/_(.+?)_/', '<u>$1</u>', $perfil);
+        $perfil = preg_replace('/_([^_]+?)_/', '<u>$1</u>', $perfil);
 
         // hashtag
         preg_match_all('/\#[A-Za-z0-9_]+/', $perfil, $hashtags);
@@ -119,7 +119,7 @@ class Candidato extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param string $hashtag
+     * @param string $strHashtag
      * @return int
      */
     public function linkHashtag($strHashtag)
