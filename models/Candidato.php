@@ -86,7 +86,7 @@ class Candidato extends \yii\db\ActiveRecord
     {
         return $this
             ->hasMany(Hashtag::className(), ['id' => 'id_hashtag'])
-            ->viaTable('candidato_hashtag', ['id_candidato', 'id']);
+            ->viaTable('candidato_hashtag', ['id_candidato' => 'id']);
     }
 
     public function getPerfilView()
@@ -103,11 +103,14 @@ class Candidato extends \yii\db\ActiveRecord
         $perfil = preg_replace('/_([^_]+?)_/', '<u>$1</u>', $perfil);
 
         // hashtag
-        preg_match_all('/\#[A-Za-z0-9_]+/', $perfil, $hashtags);
-        foreach ($hashtags[0] as $hashtag) {
-            $id = $this->linkHashtag($hashtag);
-            $perfil = str_replace($hashtag, Html::a(
-                $hashtag,
+        preg_match_all('/\#([A-Za-z0-9_]+)/', $perfil, $hashtags);
+
+        foreach ($hashtags[1] as $hashtag) {
+
+            $id = $this->getHashtags()->where(['nome' => $hashtag])->one()->id;
+
+            $perfil = str_replace("#$hashtag", Html::a(
+                "#$hashtag",
                 [
                     'hashtag/view',
                     'id' => $id
@@ -119,22 +122,43 @@ class Candidato extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param string $strHashtag
-     * @return int
+     * @return void
      */
-    public function linkHashtag($strHashtag)
+    public function linkHashtags()
     {
-        $strHashtag = str_replace('#','',$strHashtag);
 
-        $hashtag = Hashtag::find()->where(['nome' => $strHashtag])->one();
+        // buscando as hashtags
+        preg_match_all('/\#([A-Za-z0-9_]+)/', $this->perfil, $hashtags);
 
-        if(is_null($hashtag)){
-            $hashtag = new Hashtag();
-            $hashtag->nome = $strHashtag;
-            $hashtag->save();
+        // percorrendo as hashtags encontradas no texto
+        foreach ($hashtags[1] as $nomeHashtag) {
+
+            // busca a hashtag
+            $hashtag = Hashtag::find()->where(['nome' => $nomeHashtag])->one();
+
+            // se não existir, cria a hashtag
+            if(is_null($hashtag)){
+                $hashtag = new Hashtag();
+                $hashtag->nome = $nomeHashtag;
+                $hashtag->save();
+            }
+
+            // faz o link com o candidato
+            $this->link('hashtags',$hashtag);
+
+            // busca hashtags linkadas com o candidato, que não estão no texto
+            $unlinkHashtags = $this->getHashtags()->where(['not in','nome',$hashtags[1]])->all();
+            foreach($unlinkHashtags as $unlinkHashtag) {
+                $this->unlink('hashtags', $unlinkHashtag);
+            }
+
         }
 
-        return $hashtag->id;
+    }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        $this->linkHashtags();
+        parent::afterSave($insert, $changedAttributes);
     }
 }
