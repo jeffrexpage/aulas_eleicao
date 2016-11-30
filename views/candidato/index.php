@@ -28,8 +28,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'nome',
             'numero',
             'partido',
-            'perfil:ntext',
-
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
