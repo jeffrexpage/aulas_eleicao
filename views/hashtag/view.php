@@ -10,6 +10,7 @@
 <?php foreach($candidatos as $candidato): ?>
     <tr>
         <td><?= $candidato->nome ?></td>
+        <td><?= $candidato->partido ?></td>
         <td><?= $candidato->perfilView ?></td>
     </tr>
 <?php endforeach; ?>

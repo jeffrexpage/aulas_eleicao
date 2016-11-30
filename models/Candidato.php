@@ -107,7 +107,8 @@ class Candidato extends \yii\db\ActiveRecord
 
         foreach ($hashtags[1] as $hashtag) {
 
-            $id = $this->getHashtags()->where(['nome' => $hashtag])->one()->id;
+            $objHashtag = $this->getHashtags()->where(['nome' => $hashtag])->one();
+            $id = $objHashtag->id;
 
             $perfil = str_replace("#$hashtag", Html::a(
                 "#$hashtag",

@@ -39,6 +39,13 @@ class BairroController extends Controller
                         'actions' => ['create', 'update', 'delete'],
                         'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
+
+                            /*
+                            $request = Yii::$app->request;
+                            $id = $request->getQueryParam('id');
+                            $post = Post::find()->where(['id' => $id])->one();
+                            return Yii::$app->user->identity->id == $post->user->id;
+                            */
                             return Yii::$app->user->identity->username == 'admin';
                         }
                     ]
